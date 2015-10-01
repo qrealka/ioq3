@@ -1304,7 +1304,7 @@ void Info_SetValueForKey( char *s, const char *key, const char *value ) {
 
 	for(; *blacklist; ++blacklist)
 	{
-		if (strchr (key, *blacklist) || strchr (value, *blacklist))
+		if (strchr (key, *blacklist) || (value && strchr (value, *blacklist)))
 		{
 			Com_Printf (S_COLOR_YELLOW "Can't use keys or values with a '%c': %s = %s\n", *blacklist, key, value);
 			return;
@@ -1345,7 +1345,7 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 
 	for(; *blacklist; ++blacklist)
 	{
-		if (strchr (key, *blacklist) || strchr (value, *blacklist))
+		if (strchr (key, *blacklist) || (value && strchr (value, *blacklist)))
 		{
 			Com_Printf (S_COLOR_YELLOW "Can't use keys or values with a '%c': %s = %s\n", *blacklist, key, value);
 			return;

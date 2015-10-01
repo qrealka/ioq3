@@ -3419,11 +3419,12 @@ static void FS_CheckPak0( void )
 
 	for( path = fs_searchpaths; path; path = path->next )
 	{
-		const char* pakBasename = path->pack->pakBasename;
+		const char* pakBasename;
 
 		if(!path->pack)
 			continue;
 
+		pakBasename = path->pack->pakBasename;
 		curpack = path->pack;
 
 		if(!Q_stricmpn( curpack->pakGamename, "demoq3", MAX_OSPATH )

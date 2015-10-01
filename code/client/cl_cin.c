@@ -1418,6 +1418,8 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 	Com_Memset(&cin, 0, sizeof(cinematics_t) );
 	currentHandle = CIN_HandleForVideo();
+	if (currentHandle < 0)
+		return -1;
 
 	cin.currentHandle = currentHandle;
 

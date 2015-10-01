@@ -1461,7 +1461,7 @@ void S_UpdateBackgroundTrack( void ) {
 		// decide how much data needs to be read from the file
 		fileSamples = bufferSamples * s_backgroundStream->info.rate / dma.speed;
 
-		if (!fileSamples)
+		if (!fileSamples || !s_backgroundStream)
 			return;
 
 		// our max buffer size

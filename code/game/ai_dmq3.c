@@ -4513,7 +4513,7 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, int activate) {
 	//
 	if (bs->flags & BFL_AVOIDRIGHT) VectorNegate(sideward, sideward);
 	// try to crouch straight forward?
-	if (movetype != MOVE_CROUCH || !trap_BotMoveInDirection(bs->ms, hordir, 400, movetype)) {
+	if (!trap_BotMoveInDirection(bs->ms, hordir, 400, movetype)) {
 		// perform the movement
 		if (!trap_BotMoveInDirection(bs->ms, sideward, 400, movetype)) {
 			// flip the avoid direction flag

@@ -752,9 +752,6 @@
     <ClInclude Include="..\..\code\qcommon\vm_local.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\sys\win_resource.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\code\botlib\aasfile.h">
       <Filter>botlib\Header Files</Filter>
     </ClInclude>
@@ -834,9 +831,6 @@
       <Filter>speex</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\renderercommon\iqm.h">
-      <Filter>renderercommon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\code\renderercommon\qgl.h">
       <Filter>renderercommon</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\renderercommon\tr_common.h">

@@ -669,8 +669,8 @@ static void ProjectDlightTexture_scalar( void ) {
 				} else if ( texCoords[1] > 1.0f ) {
 					clip |= 8;
 				}
-				texCoords[0] = texCoords[0];
-				texCoords[1] = texCoords[1];
+				//texCoords[0] = texCoords[0];
+				//texCoords[1] = texCoords[1];
 
 				// modulate the strength based on the height and color
 				if ( dist[2] > radius ) {
