@@ -47,33 +47,33 @@ at the same time.
 */
 
 
-kbutton_t	in_left, in_right, in_forward, in_back;
-kbutton_t	in_lookup, in_lookdown, in_moveleft, in_moveright;
-kbutton_t	in_strafe, in_speed;
-kbutton_t	in_up, in_down;
+static kbutton_t	in_left, in_right, in_forward, in_back;
+static kbutton_t	in_lookup, in_lookdown, in_moveleft, in_moveright;
+static kbutton_t	in_strafe, in_speed;
+static kbutton_t	in_up, in_down;
 
 #ifdef USE_VOIP
-kbutton_t	in_voiprecord;
+static kbutton_t	in_voiprecord;
 #endif
 
-kbutton_t	in_buttons[16];
+static kbutton_t	in_buttons[16];
 
 
-qboolean	in_mlooking;
+static qboolean	in_mlooking;
 
 
-void IN_MLookDown( void ) {
+static void IN_MLookDown( void ) {
 	in_mlooking = qtrue;
 }
 
-void IN_MLookUp( void ) {
+static void IN_MLookUp( void ) {
 	in_mlooking = qfalse;
 	if ( !cl_freelook->integer ) {
 		IN_CenterView ();
 	}
 }
 
-void IN_KeyDown( kbutton_t *b ) {
+static void IN_KeyDown( kbutton_t *b ) {
 	int		k;
 	char	*c;
 	
@@ -109,7 +109,7 @@ void IN_KeyDown( kbutton_t *b ) {
 	b->wasPressed = qtrue;
 }
 
-void IN_KeyUp( kbutton_t *b ) {
+static void IN_KeyUp( kbutton_t *b ) {
 	int		k;
 	char	*c;
 	unsigned	uptime;
@@ -158,7 +158,7 @@ CL_KeyState
 Returns the fraction of the frame that the key was down
 ===============
 */
-float CL_KeyState( kbutton_t *key ) {
+static float CL_KeyState( kbutton_t *key ) {
 	float		val;
 	int			msec;
 
@@ -289,8 +289,8 @@ CL_AdjustAngles
 Moves the local angle positions
 ================
 */
-void CL_AdjustAngles( void ) {
-	float	speed;
+static void CL_AdjustAngles( void ) {
+	double	speed;
 	
 	if ( in_speed.active ) {
 		speed = 0.001 * cls.frametime * cl_anglespeedkey->value;
@@ -314,7 +314,7 @@ CL_KeyMove
 Sets the usercmd_t based on key states
 ================
 */
-void CL_KeyMove( usercmd_t *cmd ) {
+static void CL_KeyMove( usercmd_t *cmd ) {
 	int		movespeed;
 	int		forward, side, up;
 
@@ -427,15 +427,15 @@ CL_MouseMove
 =================
 */
 
-void CL_MouseMove(usercmd_t *cmd)
+static void CL_MouseMove(usercmd_t *cmd)
 {
-	float mx, my;
+	double mx, my;
 
 	// allow mouse smoothing
 	if (m_filter->integer)
 	{
-		mx = (cl.mouseDx[0] + cl.mouseDx[1]) * 0.5f;
-		my = (cl.mouseDy[0] + cl.mouseDy[1]) * 0.5f;
+		mx = (cl.mouseDx[0] + cl.mouseDx[1]) * 0.5;
+		my = (cl.mouseDy[0] + cl.mouseDy[1]) * 0.5;
 	}
 	else
 	{
@@ -447,17 +447,17 @@ void CL_MouseMove(usercmd_t *cmd)
 	cl.mouseDx[cl.mouseIndex] = 0;
 	cl.mouseDy[cl.mouseIndex] = 0;
 
-	if (mx == 0.0f && my == 0.0f)
+	if (!mx && !my)
 		return;
 	
 	if (cl_mouseAccel->value != 0.0f)
 	{
 		if(cl_mouseAccelStyle->integer == 0)
 		{
-			float accelSensitivity;
-			float rate;
+			double accelSensitivity;
+			double rate;
 			
-			rate = sqrt(mx * mx + my * my) / (float) frame_msec;
+			rate = sqrt(mx * mx + my * my) / (double) frame_msec;
 
 			accelSensitivity = cl_sensitivity->value + rate * cl_mouseAccel->value;
 			mx *= accelSensitivity;
@@ -468,16 +468,16 @@ void CL_MouseMove(usercmd_t *cmd)
 		}
 		else
 		{
-			float rate[2];
-			float power[2];
+			double rate[2];
+			double power[2];
 
 			// sensitivity remains pretty much unchanged at low speeds
 			// cl_mouseAccel is a power value to how the acceleration is shaped
 			// cl_mouseAccelOffset is the rate for which the acceleration will have doubled the non accelerated amplification
 			// NOTE: decouple the config cvars for independent acceleration setup along X and Y?
 
-			rate[0] = fabs(mx) / (float) frame_msec;
-			rate[1] = fabs(my) / (float) frame_msec;
+			rate[0] = fabs(mx) / (double) frame_msec;
+			rate[1] = fabs(my) / (double) frame_msec;
 			power[0] = powf(rate[0] / cl_mouseAccelOffset->value, cl_mouseAccel->value);
 			power[1] = powf(rate[1] / cl_mouseAccelOffset->value, cl_mouseAccel->value);
 
@@ -516,7 +516,7 @@ void CL_MouseMove(usercmd_t *cmd)
 CL_CmdButtons
 ==============
 */
-void CL_CmdButtons( usercmd_t *cmd ) {
+static void CL_CmdButtons( usercmd_t *cmd ) {
 	int		i;
 
 	//
@@ -548,7 +548,7 @@ void CL_CmdButtons( usercmd_t *cmd ) {
 CL_FinishMove
 ==============
 */
-void CL_FinishMove( usercmd_t *cmd ) {
+static void CL_FinishMove( usercmd_t *cmd ) {
 	int		i;
 
 	// copy the state that the cgame is currently sending
@@ -569,7 +569,7 @@ void CL_FinishMove( usercmd_t *cmd ) {
 CL_CreateCmd
 =================
 */
-usercmd_t CL_CreateCmd( void ) {
+static usercmd_t CL_CreateCmd( void ) {
 	usercmd_t	cmd;
 	vec3_t		oldAngles;
 
@@ -622,7 +622,7 @@ CL_CreateNewCommands
 Create a new usercmd_t structure for this frame
 =================
 */
-void CL_CreateNewCommands( void ) {
+static void CL_CreateNewCommands( void ) {
 	int			cmdNum;
 
 	// no need to create usercmds until we have a gamestate
@@ -657,7 +657,7 @@ delivered in the next packet, but saving a header and
 getting more delta compression will reduce total bandwidth.
 =================
 */
-qboolean CL_ReadyToSendPacket( void ) {
+static qboolean CL_ReadyToSendPacket( void ) {
 	int		oldPacketNum;
 	int		delta;
 
@@ -687,15 +687,15 @@ qboolean CL_ReadyToSendPacket( void ) {
 	}
 
 	// send every frame for LAN
-	if ( cl_lanForcePackets->integer && Sys_IsLANAddress( clc.netchan.remoteAddress ) ) {
+	if ( Sys_IsLANAddress( clc.netchan.remoteAddress ) ) {
 		return qtrue;
 	}
 
 	// check for exceeding cl_maxpackets
 	if ( cl_maxpackets->integer < 15 ) {
 		Cvar_Set( "cl_maxpackets", "15" );
-	} else if ( cl_maxpackets->integer > 125 ) {
-		Cvar_Set( "cl_maxpackets", "125" );
+	} else if ( cl_maxpackets->integer > 250 ) {
+		Cvar_Set( "cl_maxpackets", "250" );
 	}
 	oldPacketNum = (clc.netchan.outgoingSequence - 1) & PACKET_MASK;
 	delta = cls.realtime -  cl.outPackets[ oldPacketNum ].p_realtime;
