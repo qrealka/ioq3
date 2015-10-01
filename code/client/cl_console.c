@@ -559,8 +559,8 @@ void Con_DrawNotify (void)
 	int		skip;
 	int		currentColor;
 
-	currentColor = 7;
-	re.SetColor( g_color_table[currentColor] );
+	currentColor = COLOR_WHITE;
+	re.SetColor(ColorFromChar(currentColor));
 
 	v = 0;
 	for (i= con.current-NUM_CON_TIMES+1 ; i<=con.current ; i++)
@@ -585,7 +585,7 @@ void Con_DrawNotify (void)
 			}
 			if ( ColorIndexForNumber( text[x]>>8 ) != currentColor ) {
 				currentColor = ColorIndexForNumber( text[x]>>8 );
-				re.SetColor( g_color_table[currentColor] );
+				re.SetColor(ColorFromChar(currentColor));
 			}
 			SCR_DrawSmallChar( cl_conXOffset->integer + con.xadjust + (x+1)*SMALLCHAR_WIDTH, v, text[x] & 0xff );
 		}
@@ -604,12 +604,12 @@ void Con_DrawNotify (void)
 	{
 		if (chat_team)
 		{
-			SCR_DrawBigString (8, v, "say_team:", 1.0f, qfalse );
+			SCR_DrawBigString (8, v, "say_team:", qfalse );
 			skip = 10;
 		}
 		else
 		{
-			SCR_DrawBigString (8, v, "say:", 1.0f, qfalse );
+			SCR_DrawBigString (8, v, "say:", qfalse );
 			skip = 5;
 		}
 
@@ -665,7 +665,7 @@ void Con_DrawSolidConsole( float frac ) {
 
 	// draw the version number
 
-	re.SetColor( g_color_table[ColorIndex(COLOR_RED)] );
+	re.SetColor(ColorFromChar(COLOR_RED));
 
 	i = strlen( Q3_VERSION );
 
@@ -685,7 +685,7 @@ void Con_DrawSolidConsole( float frac ) {
 	if (con.display != con.current)
 	{
 	// draw arrows to show the buffer is backscrolled
-		re.SetColor( g_color_table[ColorIndex(COLOR_RED)] );
+		re.SetColor(ColorFromChar(COLOR_RED));
 		for (x=0 ; x<con.linewidth ; x+=4)
 			SCR_DrawSmallChar( con.xadjust + (x+1)*SMALLCHAR_WIDTH, y, '^' );
 		y -= SMALLCHAR_HEIGHT;
@@ -698,8 +698,8 @@ void Con_DrawSolidConsole( float frac ) {
 		row--;
 	}
 
-	currentColor = 7;
-	re.SetColor( g_color_table[currentColor] );
+	currentColor = COLOR_WHITE;
+	re.SetColor(ColorFromChar(currentColor));
 
 	for (i=0 ; i<rows ; i++, y -= SMALLCHAR_HEIGHT, row--)
 	{
@@ -719,7 +719,7 @@ void Con_DrawSolidConsole( float frac ) {
 
 			if ( ColorIndexForNumber( text[x]>>8 ) != currentColor ) {
 				currentColor = ColorIndexForNumber( text[x]>>8 );
-				re.SetColor( g_color_table[currentColor] );
+				re.SetColor(ColorFromChar(currentColor));
 			}
 			SCR_DrawSmallChar(  con.xadjust + (x+1)*SMALLCHAR_WIDTH, y, text[x] & 0xff );
 		}

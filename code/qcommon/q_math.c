@@ -35,30 +35,78 @@ vec3_t	vec3_origin = {0,0,0};
 vec3_t	axisDefault[3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
 
 
-vec4_t		colorBlack	= {0, 0, 0, 1};
-vec4_t		colorRed	= {1, 0, 0, 1};
-vec4_t		colorGreen	= {0, 1, 0, 1};
-vec4_t		colorBlue	= {0, 0, 1, 1};
-vec4_t		colorYellow	= {1, 1, 0, 1};
-vec4_t		colorMagenta= {1, 0, 1, 1};
-vec4_t		colorCyan	= {0, 1, 1, 1};
-vec4_t		colorWhite	= {1, 1, 1, 1};
-vec4_t		colorLtGrey	= {0.75, 0.75, 0.75, 1};
-vec4_t		colorMdGrey	= {0.5, 0.5, 0.5, 1};
-vec4_t		colorDkGrey	= {0.25, 0.25, 0.25, 1};
+const vec4_t colorBlack  = { 0, 0, 0, 1 };
+const vec4_t colorRed    = { 1, 0, 0, 1 };
+const vec4_t colorGreen  = { 0, 1, 0, 1 };
+const vec4_t colorYellow = { 1, 1, 0, 1 };
+const vec4_t colorBlue   = { 0.2f, 0.2f, 1, 1 }; // blue is impure because its intensity is so poor otherwise
+const vec4_t colorPink   = { 1, 0, 1, 1 };
+const vec4_t colorCyan   = { 0, 1, 1, 1 };
+const vec4_t colorWhite  = { 1, 1, 1, 1 };
+const vec4_t colorOrange = {1, 0.5, 0, 1};
+const vec4_t colorViolet = {0.6f, 0.6f, 1.f, 1.f};
+const vec4_t colorLtGrey = {0.75, 0.75, 0.75, 1};
+const vec4_t colorMdGrey = {0.5, 0.5, 0.5, 1};
+const vec4_t colorDkGrey = {0.25, 0.25, 0.25, 1};
 
-vec4_t	g_color_table[8] =
+static const vec4_t	g_color_table[35] =
 	{
-	{0.0, 0.0, 0.0, 1.0},
-	{1.0, 0.0, 0.0, 1.0},
-	{0.0, 1.0, 0.0, 1.0},
-	{1.0, 1.0, 0.0, 1.0},
-	{0.0, 0.0, 1.0, 1.0},
-	{0.0, 1.0, 1.0, 1.0},
-	{1.0, 0.0, 1.0, 1.0},
-	{1.0, 1.0, 1.0, 1.0},
-	};
+		{ 0, 0, 0, 1 },
+		{ 1, 0, 0, 1 },
+		{ 0, 1, 0, 1 },
+		{ 1, 1, 0, 1 },
+		{ 0.2f, 0.2f, 1, 1 },
+		{ 0, 1, 1, 1 }, // id got pink and cyan backwards
+		{ 1, 0, 1, 1 },
+		{ 1, 1, 1, 1 },
+		{ 1.00000f, 0.50000f, 0.00000f, 1.00000f },	// 8
+		{ 0.60000f, 0.60000f, 1.00000f, 1.00000f },	// 9
 
+		// CPMA's alphabet rainbow
+		{ 1.00000f, 0.00000f, 0.00000f, 1.00000f },	// a
+		{ 1.00000f, 0.26795f, 0.00000f, 1.00000f },	// b
+		{ 1.00000f, 0.50000f, 0.00000f, 1.00000f },	// c
+		{ 1.00000f, 0.73205f, 0.00000f, 1.00000f },	// d
+		{ 1.00000f, 1.00000f, 0.00000f, 1.00000f },	// e
+		{ 0.73205f, 1.00000f, 0.00000f, 1.00000f },	// f
+		{ 0.50000f, 1.00000f, 0.00000f, 1.00000f },	// g
+		{ 0.26795f, 1.00000f, 0.00000f, 1.00000f },	// h
+		{ 0.00000f, 1.00000f, 0.00000f, 1.00000f },	// i
+		{ 0.00000f, 1.00000f, 0.26795f, 1.00000f },	// j
+		{ 0.00000f, 1.00000f, 0.50000f, 1.00000f },	// k
+		{ 0.00000f, 1.00000f, 0.73205f, 1.00000f },	// l
+		{ 0.00000f, 1.00000f, 1.00000f, 1.00000f },	// m
+		{ 0.00000f, 0.73205f, 1.00000f, 1.00000f },	// n
+		{ 0.00000f, 0.50000f, 1.00000f, 1.00000f },	// o
+		{ 0.00000f, 0.26795f, 1.00000f, 1.00000f },	// p
+		{ 0.00000f, 0.00000f, 1.00000f, 1.00000f },	// q
+		{ 0.26795f, 0.00000f, 1.00000f, 1.00000f },	// r
+		{ 0.50000f, 0.00000f, 1.00000f, 1.00000f },	// s
+		{ 0.73205f, 0.00000f, 1.00000f, 1.00000f },	// t
+		{ 1.00000f, 0.00000f, 1.00000f, 1.00000f },	// u
+		{ 1.00000f, 0.00000f, 0.73205f, 1.00000f },	// v
+		{ 1.00000f, 0.00000f, 0.50000f, 1.00000f },	// w
+		{ 1.00000f, 0.00000f, 0.26795f, 1.00000f },	// x
+		{ 1, 1, 1, 1 }, // y, white, duped so all colors can be expressed with this palette
+};
+
+const /* vec4_t */ float* ColorFromChar(char ccode)
+{
+	if (ccode >= '0' && ccode <= '9') {
+		ccode -= '0';
+	}
+	else if (ccode >= 'a' && ccode <= 'y') {
+		ccode -= 'a' - 10;
+	}
+	else if (ccode >= 'A' && ccode <= 'Y') {
+		ccode -= 'A' - 10;
+	}
+	else {
+		return colorWhite;
+	}
+
+	return g_color_table[ccode];
+}
 
 vec3_t	bytedirs[NUMVERTEXNORMALS] =
 {
@@ -288,61 +336,31 @@ RotatePointAroundVector
 This is not implemented very well...
 ===============
 */
-void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point,
-							 float degrees ) {
-	float	m[3][3];
-	float	im[3][3];
-	float	zrot[3][3];
-	float	tmpmat[3][3];
-	float	rot[3][3];
-	int	i;
-	vec3_t vr, vup, vf;
-	float	rad;
+void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees )
+{
+	float m[3][3];
+	float c, s, t;
 
-	vf[0] = dir[0];
-	vf[1] = dir[1];
-	vf[2] = dir[2];
+	degrees = DEG2RAD( degrees );
+	s = sin( degrees );
+	c = cos( degrees );
+	t = 1 - c;
 
-	PerpendicularVector( vr, dir );
-	CrossProduct( vr, vf, vup );
+	m[0][0] = t*dir[0]*dir[0] + c;
+	m[0][1] = t*dir[0]*dir[1] + s*dir[2];
+	m[0][2] = t*dir[0]*dir[2] - s*dir[1];
 
-	m[0][0] = vr[0];
-	m[1][0] = vr[1];
-	m[2][0] = vr[2];
+	m[1][0] = t*dir[0]*dir[1] - s*dir[2];
+	m[1][1] = t*dir[1]*dir[1] + c;
+	m[1][2] = t*dir[1]*dir[2] + s*dir[0];
 
-	m[0][1] = vup[0];
-	m[1][1] = vup[1];
-	m[2][1] = vup[2];
+	m[2][0] = t*dir[0]*dir[2] + s*dir[1];
+	m[2][1] = t*dir[1]*dir[2] - s*dir[0];
+	m[2][2] = t*dir[2]*dir[2] + c;
 
-	m[0][2] = vf[0];
-	m[1][2] = vf[1];
-	m[2][2] = vf[2];
-
-	memcpy( im, m, sizeof( im ) );
-
-	im[0][1] = m[1][0];
-	im[0][2] = m[2][0];
-	im[1][0] = m[0][1];
-	im[1][2] = m[2][1];
-	im[2][0] = m[0][2];
-	im[2][1] = m[1][2];
-
-	memset( zrot, 0, sizeof( zrot ) );
-	zrot[2][2] = 1.0F;
-
-	rad = DEG2RAD( degrees );
-	zrot[0][0] = cos( rad );
-	zrot[0][1] = sin( rad );
-	zrot[1][0] = -sin( rad );
-	zrot[1][1] = cos( rad );
-
-	MatrixMultiply( m, zrot, tmpmat );
-	MatrixMultiply( tmpmat, im, rot );
-
-	for ( i = 0; i < 3; i++ ) {
-		dst[i] = rot[i][0] * point[0] + rot[i][1] * point[1] + rot[i][2] * point[2];
-	}
+	VectorRotate( point, m, dst );
 }
+
 
 /*
 ===============
@@ -567,16 +585,17 @@ float	AngleSubtract( float a1, float a2 ) {
 }
 
 
-void AnglesSubtract( vec3_t v1, vec3_t v2, vec3_t v3 ) {
-	v3[0] = AngleSubtract( v1[0], v2[0] );
-	v3[1] = AngleSubtract( v1[1], v2[1] );
-	v3[2] = AngleSubtract( v1[2], v2[2] );
+void AnglesSubtract( const vec3_t v1, const vec3_t v2, vec3_t out )
+{
+	out[0] = AngleSubtract( v1[0], v2[0] );
+	out[1] = AngleSubtract( v1[1], v2[1] );
+	out[2] = AngleSubtract( v1[2], v2[2] );
 }
 
 
-float	AngleMod(float a) {
-	a = (360.0/65536) * ((int)(a*(65536/360.0)) & 65535);
-	return a;
+float AngleMod( float a )
+{
+	return ((360.0/65536) * ((int)(a*(65536/360.0)) & 65535));
 }
 
 

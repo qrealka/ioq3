@@ -51,30 +51,31 @@ jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 
 FILE *debuglogfile;
 static fileHandle_t pipefile;
-static fileHandle_t logfile;
-fileHandle_t	com_journalFile;			// events are written here
-fileHandle_t	com_journalDataFile;		// config files are written here
+static fileHandle_t logfile = 0;
+static fileHandle_t com_journalFile = 0;		// events are written here
+fileHandle_t	com_journalDataFile = 0;		// config files are written here
 
-cvar_t	*com_speeds;
-cvar_t	*com_developer;
-cvar_t	*com_dedicated;
-cvar_t	*com_timescale;
-cvar_t	*com_fixedtime;
-cvar_t	*com_journal;
-cvar_t	*com_maxfps;
+cvar_t	*com_viewlog = 0;
+cvar_t	*com_speeds = 0;
+cvar_t	*com_developer = 0;
+cvar_t	*com_dedicated = 0;
+cvar_t	*com_timescale = 0;
+cvar_t	*com_fixedtime = 0;
+cvar_t	*com_journal = 0;
+cvar_t	*com_maxfps = 0;
 cvar_t	*com_altivec;
-cvar_t	*com_timedemo;
-cvar_t	*com_sv_running;
-cvar_t	*com_cl_running;
-cvar_t	*com_logfile;		// 1 = buffer log, 2 = flush after each print
+cvar_t	*com_timedemo = 0;
+cvar_t	*com_sv_running = 0;
+cvar_t	*com_cl_running = 0;
+cvar_t	*com_logfile = 0;		// 1 = buffer log, 2 = flush after each print
 cvar_t	*com_pipefile;
-cvar_t	*com_showtrace;
-cvar_t	*com_version;
+cvar_t	*com_showtrace = 0;
+cvar_t	*com_version = 0;
 cvar_t	*com_blood;
-cvar_t	*com_buildScript;	// for automated data building scripts
-cvar_t	*com_introPlayed;
-cvar_t	*cl_paused;
-cvar_t	*sv_paused;
+cvar_t	*com_buildScript = 0;	// for automated data building scripts
+cvar_t	*com_introPlayed = 0;
+cvar_t	*cl_paused = 0;
+cvar_t	*sv_paused = 0;
 cvar_t  *cl_packetdelay;
 cvar_t  *sv_packetdelay;
 cvar_t	*com_cameraMode;
@@ -114,7 +115,7 @@ qboolean	com_errorEntered = qfalse;
 qboolean	com_fullyInitialized = qfalse;
 qboolean	com_gameRestarting = qfalse;
 
-char	com_errorMessage[MAXPRINTMSG];
+static char com_errorMessage[MAXPRINTMSG];
 
 void Com_WriteConfig_f( void );
 void CIN_CloseAllVideos( void );
@@ -389,9 +390,9 @@ quake3 set test blah + map test
 ============================================================================
 */
 
-#define	MAX_CONSOLE_LINES	32
-int		com_numConsoleLines;
-char	*com_consoleLines[MAX_CONSOLE_LINES];
+#define MAX_CONSOLE_LINES	32
+static int com_numConsoleLines;
+static char* com_consoleLines[MAX_CONSOLE_LINES];
 
 /*
 ==================
@@ -400,27 +401,27 @@ Com_ParseCommandLine
 Break it up into multiple console lines
 ==================
 */
-void Com_ParseCommandLine( char *commandLine ) {
-    int inq = 0;
-    com_consoleLines[0] = commandLine;
-    com_numConsoleLines = 1;
+static void Com_ParseCommandLine( char* commandLine )
+{
+	int inq = 0;
+	com_consoleLines[0] = commandLine;
+	com_numConsoleLines = 1;
 
-    while ( *commandLine ) {
-        if (*commandLine == '"') {
-            inq = !inq;
-        }
-        // look for a + seperating character
-        // if commandLine came from a file, we might have real line seperators
-        if ( (*commandLine == '+' && !inq) || *commandLine == '\n'  || *commandLine == '\r' ) {
-            if ( com_numConsoleLines == MAX_CONSOLE_LINES ) {
-                return;
-            }
-            com_consoleLines[com_numConsoleLines] = commandLine + 1;
-            com_numConsoleLines++;
-            *commandLine = 0;
-        }
-        commandLine++;
-    }
+	while ( *commandLine ) {
+		if (*commandLine == '"') {
+			inq = !inq;
+		}
+		// look for a + separating character
+		// if commandLine came from a file, we might have real line separators
+		if ( (*commandLine == '+' && !inq) || *commandLine == '\n'  || *commandLine == '\r' ) {
+			if ( com_numConsoleLines == MAX_CONSOLE_LINES ) {
+				return;
+			}
+			*commandLine++ = 0; // terminate the PREVIOUS command
+			com_consoleLines[com_numConsoleLines++] = commandLine;
+		}
+		++commandLine;
+	}
 }
 
 
@@ -492,7 +493,7 @@ Returns qtrue if any late commands were added, which
 will keep the demoloop from immediately starting
 =================
 */
-qboolean Com_AddStartupCommands( void ) {
+static qboolean Com_AddStartupCommands( void ) {
 	int		i;
 	qboolean	added;
 
@@ -566,7 +567,7 @@ void Info_Print( const char *s ) {
 Com_StringContains
 ============
 */
-char *Com_StringContains(char *str1, char *str2, int casesensitive) {
+static char *Com_StringContains(char *str1, char *str2, int casesensitive) {
 	int len, i, j;
 
 	len = strlen(str1) - strlen(str2);
@@ -2708,7 +2709,7 @@ void Com_Init( char *commandLine ) {
 
   // get dedicated here for proper hunk megs initialization
 #ifdef DEDICATED
-	com_dedicated = Cvar_Get ("dedicated", "1", CVAR_INIT);
+	com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
 	Cvar_CheckRange( com_dedicated, 1, 2, qtrue );
 #else
 	com_dedicated = Cvar_Get ("dedicated", "0", CVAR_LATCH);
@@ -2725,7 +2726,7 @@ void Com_Init( char *commandLine ) {
 	// init commands and vars
 	//
 	com_altivec = Cvar_Get ("com_altivec", "1", CVAR_ARCHIVE);
-	com_maxfps = Cvar_Get ("com_maxfps", "85", CVAR_ARCHIVE);
+	com_maxfps = Cvar_Get ("com_maxfps", "125", CVAR_ARCHIVE);
 	com_blood = Cvar_Get ("com_blood", "1", CVAR_ARCHIVE);
 
 	com_logfile = Cvar_Get ("logfile", "0", CVAR_TEMP );

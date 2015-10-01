@@ -384,20 +384,26 @@ extern	vec3_t	bytedirs[NUMVERTEXNORMALS];
 #define	GIANTCHAR_WIDTH		32
 #define	GIANTCHAR_HEIGHT	48
 
-extern	vec4_t		colorBlack;
-extern	vec4_t		colorRed;
-extern	vec4_t		colorGreen;
-extern	vec4_t		colorBlue;
-extern	vec4_t		colorYellow;
-extern	vec4_t		colorMagenta;
-extern	vec4_t		colorCyan;
-extern	vec4_t		colorWhite;
-extern	vec4_t		colorLtGrey;
-extern	vec4_t		colorMdGrey;
-extern	vec4_t		colorDkGrey;
+
+extern const vec4_t colorBlack;
+extern const vec4_t colorRed;
+extern const vec4_t colorGreen;
+extern const vec4_t colorYellow;
+extern const vec4_t colorBlue;
+extern const vec4_t colorPink;
+extern const vec4_t colorCyan;
+extern const vec4_t colorWhite;
+extern const vec4_t colorOrange;
+extern const vec4_t colorLtGrey;
+extern const vec4_t colorMdGrey;
+extern const vec4_t colorDkGrey;
+extern const vec4_t colorViolet;
+
 
 #define Q_COLOR_ESCAPE	'^'
-#define Q_IsColorString(p)	((p) && *(p) == Q_COLOR_ESCAPE && *((p)+1) && isalnum(*((p)+1))) // ^[0-9a-zA-Z]
+#define Q_IsColorString(p)	( p && *(p) == Q_COLOR_ESCAPE && *((p)+1) && *((p)+1) != Q_COLOR_ESCAPE )
+
+const /* vec4_t */ float* ColorFromChar( char ccode );
 
 #define COLOR_BLACK	'0'
 #define COLOR_RED	'1'
@@ -419,12 +425,10 @@ extern	vec4_t		colorDkGrey;
 #define S_COLOR_MAGENTA	"^6"
 #define S_COLOR_WHITE	"^7"
 
-extern vec4_t	g_color_table[8];
+#define MAKERGB( v, r, g, b ) { v[0]=r;v[1]=g;v[2]=b; }
+#define MAKERGBA( v, r, g, b, a ) { v[0]=r;v[1]=g;v[2]=b;v[3]=a; }
 
-#define	MAKERGB( v, r, g, b ) v[0]=r;v[1]=g;v[2]=b
-#define	MAKERGBA( v, r, g, b, a ) v[0]=r;v[1]=g;v[2]=b;v[3]=a
-
-#define DEG2RAD( a ) ( ( (a) * M_PI ) / 180.0F )
+#define DEG2RAD( a ) ( ( (a) * M_PI ) / 180.0f )
 #define RAD2DEG( a ) ( ( (a) * 180.0f ) / M_PI )
 
 struct cplane_s;
@@ -661,7 +665,7 @@ void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross );
 vec_t VectorNormalize (vec3_t v);		// returns vector length
 vec_t VectorNormalize2( const vec3_t v, vec3_t out );
 void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
-void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out );
+void VectorRotate( const vec3_t in, vec3_t matrix[3], vec3_t out );
 int Q_log2(int val);
 
 float Q_acos(float c);
@@ -670,8 +674,8 @@ int		Q_rand( int *seed );
 float	Q_random( int *seed );
 float	Q_crandom( int *seed );
 
-#define random()	((rand () & 0x7fff) / ((float)0x7fff))
-#define crandom()	(2.0 * (random() - 0.5))
+#define random()	((rand() & 0x7FFF) / ((float)0x8000))
+#define crandom()	(2.0 * (((rand() & 0x7FFF) / ((float)0x7FFF)) - 0.5))
 
 void vectoangles( const vec3_t value1, vec3_t angles);
 void AnglesToAxis( const vec3_t angles, vec3_t axis[3] );
@@ -1068,8 +1072,9 @@ typedef enum {
 #define	ANGLE2SHORT(x)	((int)((x)*65536/360) & 65535)
 #define	SHORT2ANGLE(x)	((x)*(360.0/65536))
 
-#define	SNAPFLAG_RATE_DELAYED	1
-#define	SNAPFLAG_NOT_ACTIVE		2	// snapshot used during connection and for zombies
+#define MAX_SNAPS	30	// CPMA  this is the true upper limit of sv_fps
+#define SNAPFLAG_RATE_DELAYED	1
+#define SNAPFLAG_NOT_ACTIVE		2	// snapshot used during connection and for zombies
 #define SNAPFLAG_SERVERCOUNT	4	// toggled every map_restart so transitions can be detected
 
 //

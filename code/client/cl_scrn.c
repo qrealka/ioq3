@@ -196,24 +196,20 @@ to a fixed color.
 Coordinates are at 640 by 480 virtual resolution
 ==================
 */
-void SCR_DrawStringExt( int x, int y, float size, const char *string, float *setColor, qboolean forceColor,
-		qboolean noColorEscape ) {
-	vec4_t		color;
+void SCR_DrawStringExt( int x, int y, float size, const char *string, qboolean forceColor, qboolean noColorEscape ) {
 	const char	*s;
 	int			xx;
 
 	// draw the drop shadow
-	color[0] = color[1] = color[2] = 0;
-	color[3] = setColor[3];
-	re.SetColor( color );
+	re.SetColor(colorBlack);
 	s = string;
-	xx = x;
-	while ( *s ) {
-		if ( !noColorEscape && Q_IsColorString( s ) ) {
+	xx = x + 1;
+	while (*s) {
+		if ( Q_IsColorString( s ) ) { 
 			s += 2;
 			continue;
 		}
-		SCR_DrawChar( xx+2, y+2, size, *s );
+		SCR_DrawChar( xx, y+2, size, *s );
 		xx += size;
 		s++;
 	}
@@ -222,18 +218,14 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 	// draw the colored text
 	s = string;
 	xx = x;
-	re.SetColor( setColor );
+	re.SetColor( colorWhite );
 	while ( *s ) {
 		if ( Q_IsColorString( s ) ) {
 			if ( !forceColor ) {
-				Com_Memcpy( color, g_color_table[ColorIndex(*(s+1))], sizeof( color ) );
-				color[3] = setColor[3];
-				re.SetColor( color );
+				re.SetColor(ColorFromChar(s[1]));
 			}
-			if ( !noColorEscape ) {
-				s += 2;
-				continue;
-			}
+			s += 2;
+			continue;
 		}
 		SCR_DrawChar( xx, y, size, *s );
 		xx += size;
@@ -243,17 +235,10 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 }
 
 
-void SCR_DrawBigString( int x, int y, const char *s, float alpha, qboolean noColorEscape ) {
-	float	color[4];
-
-	color[0] = color[1] = color[2] = 1.0;
-	color[3] = alpha;
-	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, qfalse, noColorEscape );
+void SCR_DrawBigString( int x, int y, const char *s, qboolean noColorEscape ) {
+	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, qfalse, noColorEscape );
 }
 
-void SCR_DrawBigStringColor( int x, int y, const char *s, vec4_t color, qboolean noColorEscape ) {
-	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, qtrue, noColorEscape );
-}
 
 
 /*
@@ -264,27 +249,21 @@ Draws a multi-colored string with a drop shadow, optionally forcing
 to a fixed color.
 ==================
 */
-void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, qboolean forceColor,
-		qboolean noColorEscape ) {
-	vec4_t		color;
+void SCR_DrawSmallStringExt( int x, int y, const char *string, qboolean forceColor, qboolean noColorEscape ) {
 	const char	*s;
 	int			xx;
 
 	// draw the colored text
 	s = string;
 	xx = x;
-	re.SetColor( setColor );
-	while ( *s ) {
+	re.SetColor(colorWhite);
+	while (*s) {
 		if ( Q_IsColorString( s ) ) {
-			if ( !forceColor ) {
-				Com_Memcpy( color, g_color_table[ColorIndex(*(s+1))], sizeof( color ) );
-				color[3] = setColor[3];
-				re.SetColor( color );
+			if (!forceColor) {
+				re.SetColor(ColorFromChar(s[1]));
 			}
-			if ( !noColorEscape ) {
-				s += 2;
-				continue;
-			}
+			s += 2;
+			continue;
 		}
 		SCR_DrawSmallChar( xx, y, *s );
 		xx += SMALLCHAR_WIDTH;
@@ -343,7 +322,7 @@ void SCR_DrawDemoRecording( void ) {
 	pos = FS_FTell( clc.demofile );
 	sprintf( string, "RECORDING %s: %ik", clc.demoName, pos / 1024 );
 
-	SCR_DrawStringExt( 320 - strlen( string ) * 4, 20, 8, string, g_color_table[7], qtrue, qfalse );
+	SCR_DrawStringExt( 320 - strlen( string ) * 4, 20, 8, string, qtrue, qfalse );
 }
 
 
@@ -382,7 +361,7 @@ void SCR_DrawVoipMeter( void ) {
 	buffer[i] = '\0';
 
 	sprintf( string, "VoIP: [%s]", buffer );
-	SCR_DrawStringExt( 320 - strlen( string ) * 4, 10, 8, string, g_color_table[7], qtrue, qfalse );
+	SCR_DrawStringExt( 320 - strlen( string ) * 4, 10, 8, string, qtrue, qfalse );
 }
 #endif
 
@@ -427,7 +406,7 @@ void SCR_DrawDebugGraph (void)
 	w = cls.glconfig.vidWidth;
 	x = 0;
 	y = cls.glconfig.vidHeight;
-	re.SetColor( g_color_table[0] );
+	re.SetColor(colorBlack);
 	re.DrawStretchPic(x, y - cl_graphheight->integer, 
 		w, cl_graphheight->integer, 0, 0, 0, 0, cls.whiteShader );
 	re.SetColor( NULL );
@@ -483,7 +462,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame ) {
 	// unless they are displaying game renderings
 	if ( uiFullscreen || clc.state < CA_LOADING ) {
 		if ( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 ) {
-			re.SetColor( g_color_table[0] );
+			re.SetColor(colorBlack);
 			re.DrawStretchPic( 0, 0, cls.glconfig.vidWidth, cls.glconfig.vidHeight, 0, 0, 0, 0, cls.whiteShader );
 			re.SetColor( NULL );
 		}
